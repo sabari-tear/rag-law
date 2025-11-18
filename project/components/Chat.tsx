@@ -194,7 +194,7 @@ export function Chat() {
             >
               {message.role === "assistant" && (
                 <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-brand-500/90 text-xs font-semibold shadow-lg shadow-brand-500/40">
-                  LB
+                  SE
                 </div>
               )}
 
@@ -307,7 +307,7 @@ export function Chat() {
             <input
               type="text"
               className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-50 placeholder:text-slate-500 shadow-inner shadow-slate-950/60 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/60"
-              placeholder="Describe your situation or ask about a specific section (e.g., cheating under IPC, arrest procedure, evidence rules)…"
+              placeholder="Describe your situation…"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={isLoading}

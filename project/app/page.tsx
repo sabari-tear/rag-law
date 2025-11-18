@@ -6,14 +6,13 @@ export default function HomePage() {
       <header className="mt-4 space-y-3 text-center sm:mt-8 sm:space-y-4">
         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/5 px-3 py-1 text-[11px] font-medium text-emerald-200 shadow-sm shadow-emerald-500/30">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          RAG-powered assistant for Indian criminal law
+          RAG-powered assistant
         </div>
         <h1 className="text-balance text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl lg:text-5xl">
-          SythaAI – Indian Legal Chatbot
+          SythaAI – Chatbot
         </h1>
         <p className="mx-auto max-w-2xl text-balance text-sm text-slate-300 sm:text-base">
-          Ask natural-language questions about offences, procedure, and evidence. SythaAI looks up
-          relevant sections from IPC, BNS, BSA, and CrPC and explains them in clear language.
+          Ask natural-language questions about offences, procedure, and evidence.
         </p>
       </header>
 

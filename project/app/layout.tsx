@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SythaAI – Indian Legal Chatbot",
+  title: "SythaAI – Chatbot",
   description:
     "A RAG-powered Indian legal assistant that answers questions using IPC, BNS, BSA, and CrPC sections.",
 };
