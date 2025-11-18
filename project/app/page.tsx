@@ -9,10 +9,10 @@ export default function HomePage() {
           RAG-powered assistant for Indian criminal law
         </div>
         <h1 className="text-balance text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl lg:text-5xl">
-          NyayaAI – Indian Legal Chatbot
+          SythaAI – Indian Legal Chatbot
         </h1>
         <p className="mx-auto max-w-2xl text-balance text-sm text-slate-300 sm:text-base">
-          Ask natural-language questions about offences, procedure, and evidence. NyayaAI looks up
+          Ask natural-language questions about offences, procedure, and evidence. SythaAI looks up
           relevant sections from IPC, BNS, BSA, and CrPC and explains them in clear language.
         </p>
       </header>

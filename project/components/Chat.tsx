@@ -195,7 +195,7 @@ export function Chat() {
             disabled={isLoading || !input.trim()}
             className="inline-flex items-center justify-center rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-semibold text-slate-50 shadow-lg shadow-brand-500/40 transition hover:bg-brand-400 hover:shadow-brand-400/50 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:shadow-none"
           >
-            {isLoading ? "Answering…" : "Ask NyayaAI"}
+            {isLoading ? "Answering…" : "Ask SythaAI"}
           </button>
         </form>
       </section>
