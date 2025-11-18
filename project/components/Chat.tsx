@@ -11,6 +11,80 @@ type Message = {
   sources?: SourceSnippet[];
 };
 
+type ParsedBlock =
+  | { type: "heading"; text: string }
+  | { type: "paragraph"; text: string }
+  | { type: "list"; items: string[] };
+
+function stripEmphasis(text: string): string {
+  // Remove **strong** and *emphasis* markers for cleaner display
+  return text.replace(/\*\*(.+?)\*\*/g, "$1").replace(/\*(.+?)\*/g, "$1");
+}
+
+function parseAssistantContent(text: string): ParsedBlock[] {
+  const lines = text.split(/\r?\n/);
+  const blocks: ParsedBlock[] = [];
+
+  let currentParagraph: string[] = [];
+  let currentList: string[] | null = null;
+
+  const flushParagraph = () => {
+    if (currentParagraph.length) {
+      blocks.push({ type: "paragraph", text: currentParagraph.join(" ") });
+      currentParagraph = [];
+    }
+  };
+
+  const flushList = () => {
+    if (currentList && currentList.length) {
+      blocks.push({ type: "list", items: currentList.map(stripEmphasis) });
+      currentList = null;
+    }
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    if (!line) {
+      flushParagraph();
+      flushList();
+      continue;
+    }
+
+    const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
+    if (headingMatch) {
+      flushParagraph();
+      flushList();
+      const headingText = stripEmphasis(headingMatch[2].trim());
+      if (headingText) {
+        blocks.push({ type: "heading", text: headingText });
+      }
+      continue;
+    }
+
+    const bulletMatch = line.match(/^[-*+]\s+(.*)$/);
+    if (bulletMatch) {
+      flushParagraph();
+      if (!currentList) currentList = [];
+      currentList.push(bulletMatch[1].trim());
+      continue;
+    }
+
+    // Continuation lines: attach to last list item if a list is open, otherwise paragraph
+    if (currentList) {
+      const lastIndex = currentList.length - 1;
+      currentList[lastIndex] = `${currentList[lastIndex]} ${line}`;
+    } else {
+      currentParagraph.push(line);
+    }
+  }
+
+  flushParagraph();
+  flushList();
+
+  return blocks;
+}
+
 export function Chat() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -23,6 +97,7 @@ export function Chat() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expandedSourcesForId, setExpandedSourcesForId] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -131,27 +206,75 @@ export function Chat() {
                     : "bg-slate-900/80 text-slate-100 ring-1 ring-slate-700/80",
                 )}
               >
-                <p className="whitespace-pre-wrap">{message.content}</p>
+                {message.role === "assistant" ? (
+                  <>
+                    <div className="space-y-2 text-sm leading-relaxed">
+                      {parseAssistantContent(message.content).map((block, index) => {
+                        if (block.type === "heading") {
+                          return (
+                            <p key={index} className="font-semibold text-slate-100">
+                              {block.text}
+                            </p>
+                          );
+                        }
+                        if (block.type === "list") {
+                          return (
+                            <ul key={index} className="ml-5 list-disc space-y-1 text-slate-200">
+                              {block.items.map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                          );
+                        }
+                        return (
+                          <p key={index} className="text-slate-100">
+                            {block.text}
+                          </p>
+                        );
+                      })}
+                    </div>
 
-                {message.role === "assistant" && message.sources && message.sources.length > 0 && (
-                  <div className="mt-3 border-t border-slate-700/70 pt-2 text-xs text-slate-300">
-                    <p className="mb-1 font-semibold text-slate-200">Key sections referenced:</p>
-                    <ul className="space-y-1">
-                      {message.sources.map((source) => (
-                        <li key={source.id} className="flex flex-col">
-                          <span className="font-medium">
-                            {source.act}
-                            {source.section ? ` – Section ${source.section}` : ""}
-                            {source.title ? `: ${source.title}` : ""}
-                          </span>
-                          <span className="line-clamp-2 text-slate-400">
-                            {source.snippet}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                    {message.sources && message.sources.length > 0 && (
+                      <div className="mt-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setExpandedSourcesForId((current) =>
+                              current === message.id ? null : message.id,
+                            )
+                          }
+                          className="text-xs font-medium text-brand-300 hover:text-brand-200 underline-offset-2 hover:underline"
+                        >
+                          {expandedSourcesForId === message.id
+                            ? "Hide referenced sections"
+                            : "Show referenced sections"}
+                        </button>
+
+                        {expandedSourcesForId === message.id && (
+                          <div className="mt-2 border-t border-slate-700/70 pt-2 text-xs text-slate-300">
+                            <ul className="space-y-1">
+                              {message.sources.map((source) => (
+                                <li key={source.id} className="flex flex-col">
+                                  <span className="font-medium">
+                                    {source.act}
+                                    {source.section ? ` – Section ${source.section}` : ""}
+                                    {source.title ? `: ${source.title}` : ""}
+                                  </span>
+                                  <span className="line-clamp-2 text-slate-400">
+                                    {source.snippet}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="whitespace-pre-wrap">{message.content}</p>
                 )}
+
               </div>
 
               {message.role === "user" && (
