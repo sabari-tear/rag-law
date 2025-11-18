@@ -21,8 +21,7 @@ export default function HomePage() {
       </section>
 
       <footer className="mt-6 border-t border-slate-800/70 pt-4 text-center text-[11px] text-slate-500">
-        Built with OpenAI and a curated dataset of Indian laws. Always verify important answers
-        against the bare acts and consult a qualified lawyer when in doubt.
+        Princess Sytha might not be right all the time, Always verify important answers against the bare acts and consult a qualified lawyer when in doubt. 
       </footer>
     </main>
   );
