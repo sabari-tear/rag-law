@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #020617;
+  --foreground: #e5e7eb;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 antialiased;
+}
+
+.chat-scroll {
+  scroll-behavior: smooth;
+}
